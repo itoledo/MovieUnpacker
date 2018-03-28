@@ -21,6 +21,7 @@ namespace MovieUnpacker.Net
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
+                .WriteTo.RollingFile("/tmp/log-{Date}.txt")
                 .CreateLogger();
 
             var builder = new ConfigurationBuilder()
