@@ -31,9 +31,22 @@ namespace MovieUnpacker.Net
 
             var outputFolder = Configuration["outputFolder"];
 
-            Log.Information("args: {0}", args);
 
-            var target = args[0];
+            var target = Environment.GetEnvironmentVariable("TR_TORRENT_DIR"); //args[0];
+
+            if (string.IsNullOrEmpty(target))
+            {
+                Log.Error("TR_TORRENT_DIR no existe");
+                if (args?.Length == 0)
+                {
+                    Log.Error("no hay args");
+                    return;
+                }
+                target = args[0];
+                Log.Information("usando args: {0}", args);
+            }
+            else
+                Log.Information("TR_TORRENT_DIR: {0}", target);
 
             var atrs = File.GetAttributes(target);
 
@@ -108,9 +121,9 @@ namespace MovieUnpacker.Net
             }
             else
             {
-                if (target.EndsWith(".mkv"))
+                if (target.EndsWith(".mkv") || target.ToLower().EndsWith(".iso"))
                 {
-                    Log.Information("target es un mkv");
+                    Log.Information("target es linkeable");
                     Log.Information("symlink: {0}", Bash($"ln -s \"{target}\" \"{outputFolder}\""));
                 }
             }
