@@ -33,6 +33,7 @@ namespace MovieUnpacker.Net
 
 
             var target = Environment.GetEnvironmentVariable("TR_TORRENT_DIR"); //args[0];
+            var tid = Environment.GetEnvironmentVariable("TR_TORRENT_ID"); //args[0];
 
             if (string.IsNullOrEmpty(target))
             {
@@ -47,6 +48,11 @@ namespace MovieUnpacker.Net
             }
             else
                 Log.Information("TR_TORRENT_DIR: {0}", target);
+
+            if (!string.IsNullOrEmpty(tid))
+            {
+                var cl = new Transmission.API.RPC.Client(Configuration["hostname"], null, Configuration["login"], Configuration["password"]);
+            }
 
             var atrs = File.GetAttributes(target);
 
