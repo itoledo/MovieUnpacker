@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Transmission.API.RPC.Entity;
 
 namespace MovieUnpacker.Net
 {
@@ -34,6 +35,10 @@ namespace MovieUnpacker.Net
 
             var target = Environment.GetEnvironmentVariable("TR_TORRENT_DIR"); //args[0];
             var tid = Environment.GetEnvironmentVariable("TR_TORRENT_ID"); //args[0];
+            var tname = Environment.GetEnvironmentVariable("TR_TORRENT_NAME"); //args[0];
+            Log.Information("TR_TORRENT_DIR: {0}", target);
+            Log.Information("TR_TORRENT_ID: {0}", tid);
+            Log.Information("TR_TORRENT_NAME: {0}", tname);
 
             if (string.IsNullOrEmpty(target))
             {
@@ -47,11 +52,35 @@ namespace MovieUnpacker.Net
                 Log.Information("usando args: {0}", args);
             }
             else
-                Log.Information("TR_TORRENT_DIR: {0}", target);
+            {
+                
+                if (!string.IsNullOrEmpty(tname))
+                {
+                    var path = Path.Combine(target, tname);
+                    if (File.Exists(path))
+                    {
+                        Log.Information("target existe: {0}", path);
+                        target = path;
+                    }
+                }
+            }
 
             if (!string.IsNullOrEmpty(tid))
             {
-                var cl = new Transmission.API.RPC.Client(Configuration["hostname"], null, Configuration["login"], Configuration["password"]);
+                try
+                {
+                    var cl = new Transmission.API.RPC.Client(Configuration["hostname"], null, Configuration["login"], Configuration["password"]);
+                    var tdata = cl.TorrentGet(TorrentFields.ALL_FIELDS, new[] { int.Parse(tid) });
+                    var files = tdata.Torrents[0].Files;
+                    Log.Information("archivos en torrent:");
+                    foreach (var file in files)
+                    {
+                        Log.Information("archivo: {0}", file.Name);
+                    }
+                } catch (Exception e)
+                {
+                    Log.Error(e, "error la obtener info RPC");
+                }
             }
 
             var atrs = File.GetAttributes(target);
