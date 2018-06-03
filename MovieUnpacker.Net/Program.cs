@@ -32,7 +32,6 @@ namespace MovieUnpacker.Net
 
             var outputFolder = Configuration["outputFolder"];
 
-
             var target = Environment.GetEnvironmentVariable("TR_TORRENT_DIR"); //args[0];
             var tid = Environment.GetEnvironmentVariable("TR_TORRENT_ID"); //args[0];
             var tname = Environment.GetEnvironmentVariable("TR_TORRENT_NAME"); //args[0];
@@ -57,9 +56,10 @@ namespace MovieUnpacker.Net
                 if (!string.IsNullOrEmpty(tname))
                 {
                     var path = Path.Combine(target, tname);
-                    if (File.Exists(path))
+                    Log.Information("Combined path: {0}", path);
+                    if (Directory.Exists(path))
                     {
-                        Log.Information("target existe: {0}", path);
+                        Log.Information("path existe, reemplazando: {0}", path);
                         target = path;
                     }
                 }
